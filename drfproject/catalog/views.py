@@ -8,7 +8,7 @@ from rest_framework import generics
 from .models import Product, Review
 from .serializers import ProductSerializer, ReviewSerializer
 from rest_framework import status
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
@@ -90,3 +90,12 @@ class ReviewList(generics.ListCreateAPIView):
             created_by = self.request.user,
             product_id = self.kwargs['pk']
         )
+
+class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    lookup_url_kwarg = 'review_id'
+
+    def get_queryset(self):
+        review = self.kwargs['review_id']
+        return Review.objects.filter(id=review)
