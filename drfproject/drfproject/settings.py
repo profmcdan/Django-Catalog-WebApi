@@ -38,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    # 'rest_framework.authtoken', we are using Json Web Token, so dont bother
     'catalog',
 
 ]
@@ -121,3 +127,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#  We are using JWTs
+import datetime
+# Configure JWT to expire after 1 hour, and allow users to refresh near-expiration tokens
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+    'JWT_ALLOW_REFRESH': True,
+}
+# Make JWT Auth the default authentication mechanisn for Django
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+# Enables django-rest-auth to use JWT tokens instead of regular tokens
+REST_USE_JWT = True
+
+# To make the registration app work, we add the ffg, required for contrib.sites
+SITE_ID = 1
